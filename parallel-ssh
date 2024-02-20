@@ -1,0 +1,18 @@
+root@37.59.38.68
+root@37.59.61.208
+root@37.59.38.50
+root@37.59.38.66
+
+
+# parallel-ssh --inline --hosts hosts.txt --askpass --par 4 wget http://freevps.us/downloads/bench.sh -O - -o /dev/null|bash
+
+# smartctl --all /dev/sda | grep Power_On_Hours
+
+
+# Lxmie7qgGeiR
+
+# t9T9e6TLPQ8w
+
+# dfN76g8amDZT
+
+# 5uYtWQM9LMCj
