@@ -1,0 +1,8 @@
+users=(www-data rtorrent)
+
+for name in "${users[@]}"; do
+find / -xdev -user root ! -group root -perm /222 -type d -print0 | xargs -0 ls -ld | grep "$name"
+find / -xdev ! -user root -group root -perm /222 -type d -print0 | xargs -0 ls -ld | grep "$name"
+find / -xdev -user root ! -group root -perm /222 -type f -print0 | xargs -0 ls -l | grep "$name"
+find / -xdev ! -user root -group root -perm /222 -type f -print0 | xargs -0 ls -l | grep "$name"
+done
