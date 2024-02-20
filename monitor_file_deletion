@@ -1,0 +1,3 @@
+pacman -S inotify-tools
+
+inotifywait --monitor --recursive ./ --event delete | tee -a ~/Desktop/delete.txt
