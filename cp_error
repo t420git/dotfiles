@@ -1,0 +1,5 @@
+# cp_error
+
+cp -rf "/media/ricardo/My Passport" "/home/ricardo/Desktop/Passport" 2> cp-error
+
+sed '/cp: erro ao ler «/d' ./cp-error > 2
