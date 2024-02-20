@@ -1,0 +1,30 @@
+import("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth/plugins/FFMS2.avsi")
+LoadPlugin("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth/plugins/ffms2.dll")
+FFVideoSource("/home/ricardo/Área de Trabalho/legumes salteados com raspas de limão e alho.mp4")
+spline36resize(1280,720)
+spline36resize(1920,1080)
+
+
+
+
+import("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth+/plugins/FFMS2.avsi")
+LoadPlugin("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth+/plugins\ffms2.dll")
+FFVideosource("/home/ricardo/lucy.mkv").subtitle("HEVC-CLUB", align=9).ffinfo(framenum=true,frametype=true,cfrtime=false,vfrtime=false,version=false,cropping=false,colorrange=false,colorspace=false,sar=false)
+
+
+
+
+
+
+import("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth/plugins/FFMS2.avsi")
+LoadPlugin("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth/plugins/ffms2.dll")
+FFVideosource("/home/ricardo/Transferências/Mortal Kombat Legends - Scorpions Revenge (2020) (1080p BDRip x265 10bit  (Goki)[TAoE].mkv").subtitle("HEVC-CLUB", align=9).ffinfo(framenum=true,frametype=true,cfrtime=false,vfrtime=false,version=false,cropping=false,colorrange=false,colorspace=false,sar=false)
+
+
+
+
+
+
+import("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth/plugins/FFMS2.avsi")
+LoadPlugin("/home/ricardo/.wine/drive_c/Program Files (x86)/AviSynth/plugins/ffms2.dll")
+FFVideosource("/home/ricardo/Transferências/Mortal.Kombat.Legends.Scorpions.Revenge.2020.720p.x264.AC3.UNiT3D.mkv").subtitle("HDU", align=9).ffinfo(framenum=true,frametype=true,cfrtime=false,vfrtime=false,version=false,cropping=false,colorrange=false,colorspace=false,sar=false)
