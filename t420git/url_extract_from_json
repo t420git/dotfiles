@@ -1,0 +1,3 @@
+# URL extraction from JSON file
+
+grep -o 'http[s]*:[^"]*'
