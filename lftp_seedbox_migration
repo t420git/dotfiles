@@ -1,9 +1,0 @@
-# Get files from seedbox A to seedbox B
-
-lftp -u seedbox_a sftp://111.111.111.111 <<EOF
-    set sftp:auto-confirm yes
-    set mirror:use-pget-n 6
-    cd /home/seedbox_a/downloads
-    lcd /home/seedbox_b/downloads
-    mirror -c --Remove-source-files
-    exit kill
