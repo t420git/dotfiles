@@ -1,0 +1,4 @@
+# Filter out binary scripts by looking for a she-bang on the first line
+# To obtain filenames and first lines for all files in the directory
+
+awk '{print FILENAME" \"" $0"\""; nextfile}' * | sort
