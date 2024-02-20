@@ -1,0 +1,3 @@
+# URL extraction from HTML file
+
+lynx -listonly -nonumbers -dump foo.html > foo.txt
