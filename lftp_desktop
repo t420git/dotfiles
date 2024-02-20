@@ -1,0 +1,13 @@
+# Get files from seedbox to desktop
+ 
+#!/bin/bash
+
+lftp -u seedbox,placeholder sftp://111.111.111.111 <<EOF
+    set sftp:auto-confirm yes
+    set sftp:connect-program "ssh -a -x -i /home/deskop/.ssh/rtorrent-sftp-key.key"
+    set mirror:use-pget-n 6
+    cd /home/seedbox/downloads
+    lcd /home/deskop/downloads
+    mirror -c --Remove-source-files
+    exit kill
+EOF
