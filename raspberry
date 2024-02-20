@@ -1,0 +1,63 @@
+Here's how you can test your own Pis (of any model) and check the efficacy of your cooling solution. It's not perfect, as it relies on the internal temperature sensor, but it'll give you an idea of whether or not your chosen heatsink is doing the job and/or whether the inside of your case is getting crispy.
+
+sudo apt-get update && sudo apt-get install sysbench -y
+nohup sysbench --num-threads=8 --test=cpu --cpu-max-prime=10000000000 run &
+watch cat /sys/class/thermal/thermal_zone0/temp
+
+See that number? That's what the internal temperature sensor is reporting, in thousandths of a degree Celsius. Watch as it rises, and rises, and rises...
+Remember, my results are very much worst-case scenario: heavily loading all four CPU cores without a break.
+
+When you're bored of that, quit out of watch with Control + C and type:
+
+killall sysbench
+sudo shutdown -h now
+
+Unplug the Pi and stick the closest-size heatsink you have on the SoC (the chip marked BCM2837 on the top of the Pi 3), making sure you're not shorting out any other components. Plug it back in, let it boot, and type the following at the terminal:
+
+nohup sysbench --num-threads=8 --test=cpu --cpu-max-prime=10000000000 run &
+watch cat /sys/class/thermal/thermal_zone0/temp
+
+Theoretically, you should see the number is lower. Congratulations, your heatsink is doing its job!
+
+
+Some people are reporting temperature highs of just 60°C when running the benchmark, which is well below what I would expect. The issue appears to be that certain firmware/kernel versions are failing to scale the processor correctly, meaning that the BCM2837 is spending its time at 600MHz instead of 1200MHz even when the benchmark is running - killing performance but keeping the temperature down.
+
+If you're seeing low temperatures like this, could you do the following to verify?
+
+sudo apt-get update && sudo apt-get install sysbench -y
+nohup sysbench --num-threads=8 --test=cpu --cpu-max-prime=10000000000 run &
+watch sudo cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq
+
+You should see a figure of 1200000, perhaps occasionally dropping lower. If you see 600000 and it doesn't change, then you've confirmed the problem: your Pi is running at half the speed it should.
+
+
+
+I think a passive heatsink exposed to air should be fine. If you're planning to mount the Pi in a cramped enclosure with no airflow, you may need a fan - either a teeny-tiny one on the heatsink like mine, or a larger fan providing airflow through the enclosure.
+
+I’d therefore recommend anyone using the new Raspberry Pi 3 in situations where they’re expecting the board to be continuously under heavy load, or if they’re installing it in an enclosure, to add a small passive heatsink to regulate the temperature.
+
+Absolutely do not use thermal paste to fix the heatsink in place. Thermal paste is not adhesive and won't secure the heatsink, and if thermal paste gets knocked off and contacts the GPIO header there's a good chance it's going to short something out and kill your Pi.
+
+If there's an opening in the case above the SoC, then you should be fine with just a passive heatsink. Use a thermal pad, thermal tape, or thermal epoxy for a permanent fix; most small heatsinks sold for use with the Pi include thermal tape or a pad pre-applied.
+
+You can also buy thermal epoxy - but be warned, the latter is permanent.
+
+
+
+
+You only really need one heatsink, which should be either 14mm² or 15mm² and short enough that it doesn't foul any hardware you're planning to attach on top of the Pi. If you're paying more than £1/$2 at retail, you're paying too much: you can pick these things up in single-unit quantities from China for pence, if you don't mind waiting a few weeks for it to arrive.
+Find one with a thermal pad already attached, for preference, so you don't have to buy a massive sheet or roll just to use a 15mm² chunk of it...
+
+The heatsink needs to be attached, using the thermal pad or tape that should already be on the bottom when you buy it, to the system-on-chip on the top of the Pi. It's the larger black square on the Pi 3, marked "Broadcom BCM2837RIFBG" and a bunch of other numbers. It's also the thing in the thermal picture which is glowing bright white, if that helps!
+
+
+
+
+The position of the temperature sensor can't be modified; it is, though, possible to simply tweak the temperature at which it throttles. Instead of 82°C, I'd recommend closer to 70°C; that should keep the chip within spec.
+
+
+
+
+Velcro-like fasteners
+
+Scotch 3M reclosable fasteners
