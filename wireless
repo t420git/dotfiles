@@ -1,0 +1,125 @@
+http://ubuntuforums.org/showthread.php?p=12350385#post12350385
+
+lshw -C network
+
+
+systemctl status NetworkManager
+strace -p 1504
+
+iwconfig
+
+wget -N -t 5 -T 10 https://github.com/UbuntuForums/wireless-info/raw/master/wireless-info && chmod +x wireless-info && ./wireless-info
+
+
+dmesg | tail -n 100
+
+dmesg > /home/ricardo/Desktop/usb
+
+cat /sys/kernel/debug/usb/devices
+
+ip link
+ip addr
+journalctl -b
+
+last -x shutdown
+last -x reboot
+
+iw phy0 info
+
+journalctl -b -0 | grep wlp0s19f2u4
+
+journalctl -k
+
+
+--- Code: ---$ journalctl --since=2014-6-15 |grep -i network 
+Jun 16 01:02:13 brain systemd[1]: Stopping Host and Network Name Lookups.
+Jun 16 01:02:13 brain systemd[1]: Stopped target Host and Network Name Lookups.
+Jun 16 01:02:13 brain systemd[1]: Stopped LSB: lightweight network traffic monitor.
+Jun 16 01:02:13 brain dhclient[6227]: send_packet: Network is unreachable
+Jun 16 01:02:14 brain dhclient[1811]: send_packet: Network is unreachable
+Jun 16 01:02:14 brain ifdown[1697]: send_packet: Network is unreachable
+Jun 16 01:02:14 brain systemd[1]: Stopping Network.
+Jun 16 01:02:14 brain systemd[1]: Stopped target Network.
+Jun 16 01:02:14 brain systemd[1]: Stopping LSB: Raise network interfaces....
+Jun 16 01:02:14 brain networking[1962]: Deconfiguring network interfaces...done.
+Jun 16 01:02:14 brain systemd[1]: Stopped LSB: Raise network interfaces..
+--- End code ---
+
+Firmware appears to load OK and appears in lsusb -
+
+--- Code: ---$ journalctl --since=2014-6-15 |grep -i ath9k
+Jun 16 01:02:38 brain kernel: usb 8-5: ath9k_htc: Firmware htc_7010.fw requested
+Jun 16 01:02:38 brain kernel: usbcore: registered new interface driver ath9k_htc
+Jun 16 01:02:38 brain kernel: usb 8-5: ath9k_htc: Transferred FW: htc_7010.fw, size: 72992
+Jun 16 01:02:38 brain kernel: ath9k_htc 8-5:1.0: ath9k_htc: HTC initialized with 45 credits
+Jun 16 01:02:39 brain kernel: ath9k_htc 8-5:1.0: ath9k_htc: FW Version: 1.3
+--- End code ---
+
+Stand by while I reboot in to 3.15 again. Maybe dhclient is running before firmware loads.......
+Result inconclusive -
+
+--- Code: ---roger@brain:~$ journalctl -b |grep -i dhclient
+Jun 16 10:12:33 brain dhclient[1224]: Listening on LPF/wlan0/f8:d1:11:14:03:eb
+Jun 16 10:12:33 brain dhclient[1224]: Sending on   LPF/wlan0/f8:d1:11:14:03:eb
+Jun 16 10:12:33 brain dhclient[1224]: Sending on   Socket/fallback
+Jun 16 10:12:33 brain dhclient[1224]: DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 3
+---snip---
+Jun 16 10:13:31 brain dhclient[1224]: DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 3
+Jun 16 10:13:34 brain dhclient[1224]: No DHCPOFFERS received.
+Jun 16 10:13:34 brain dhclient[1224]: No working leases in persistent database - sleeping.
+roger@brain:~$ journalctl -b |grep -i ath9k_htc
+Jun 16 10:12:31 brain kernel: usb 8-5: ath9k_htc: Firmware htc_7010.fw requested
+Jun 16 10:12:31 brain kernel: usbcore: registered new interface driver ath9k_htc
+Jun 16 10:12:31 brain kernel: usb 8-5: ath9k_htc: Transferred FW: htc_7010.fw, size: 72992
+Jun 16 10:12:33 brain kernel: ath9k_htc 8-5:1.0: ath9k_htc: HTC initialized with 45 credits
+Jun 16 10:12:33 brain kernel: ath9k_htc 8-5:1.0: ath9k_htc: FW Version: 1.3
+--- End code ---
+
+https://bugzilla.kernel.org/show_bug.cgi?id=61111
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1058979
+
+https://bugzilla.kernel.org/show_bug.cgi?id=42877
+
+iw dev wlp0s26u1u2 scan dump
+
+iw phy0 info
+
+iw dev wlan0 scan dump
+
+lspci
+
+lsusb -s 001:008
+
+https://wireless.wiki.kernel.org/en/users/drivers/ath9k_htc
+
+iwconfig wlp0s26f7u3 txpower 12 (possible workaround ?)
+Sounds good. For now I've fixed the issue with an /etc/NetworkManager/dispatcher.d script.
+
+As a workaround I reduced the TX power from 100mW (20dBm) to 1dBm or 0dBm (`iw dev wlp0s29u1u2 set txpower fixed 100` or `iwconfig wlp0s29u1u2 txpower 0`) and it takes much longer to overheat when downloading huge files (transfer rate does not change notably, around 1…3MiB/s) :
+With TX power 20dBm I can transfer about 50MiB before device overheats,
+with TX power 0dBm I can transfer about 1GiB before the device overheats.
+
+
+
+sudo lspci -v -s 02:00.0 |egrep -v 'Serial Number'
+02:00.0 Network controller: Atheros Communications Inc. AR9285 Wireless Network Adapter (PCI-Express) (rev 01)
+ Subsystem: Lite-On Communications Inc Device 6611
+ Flags: bus master, fast devsel, latency 0, IRQ 17
+ Memory at d4400000 (64-bit, non-prefetchable) [size=64K]
+ Capabilities: [40] Power Management version 3
+ Capabilities: [50] MSI: Enable- Count=1/1 Maskable- 64bit-
+ Capabilities: [60] Express Legacy Endpoint, MSI 00
+ Capabilities: [100] Advanced Error Reporting
+ Capabilities: [140] Virtual Channel
+ Capabilities: [170] Power Budgeting <?>
+ Kernel driver in use: ath9k
+ Kernel modules: ath9k
+
+uname -a
+3.0.0-17-generic #30-Ubuntu SMP Thu Mar 8 20:45:39 UTC 2012 x86_64 x86_64 x86_64 GNU/Linux
+
+
+You don't need to open the log files in an editor to see what's flooding them. Just look at the last few lines:
+
+tail -n 999 /var/log/syslog | less
