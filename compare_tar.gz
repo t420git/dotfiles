@@ -1,0 +1,3 @@
+# List the contents of two .tar.gz files and do diff
+
+diff <(tar -tvf 1.tar.gz | sort) <(tar -tvf 2.tar.gz | sort)
