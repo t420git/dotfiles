@@ -1,0 +1,12 @@
+ntpd -qg
+hwclock -w
+
+rm /etc/pacman.d/gnupg
+
+pacman-key --init
+pacman-key --populate
+
+sudo pacman -Syy
+sudo pacman-key --refresh-keys
+sudo pacman-key --populate archlinux manjaro
+sudo pacman -Sc
