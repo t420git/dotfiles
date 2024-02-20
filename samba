@@ -1,0 +1,53 @@
+samba
+
+manjaro-settings-samba
+
+wsdd
+
+sudo pacman -Syy
+
+sudo pacman -Syu
+
+sudo systemctl start smb.service
+
+sudo systemctl enable smb.service
+
+sudo systemctl start wsdd.service
+
+sudo systemctl enable wsdd.service
+
+
+
+sudo useradd --system --shell /usr/sbin/nologin samba_user
+
+sudo smbpasswd -a samba_user
+
+
+mkdir /var/lib/samba/usershares
+
+groupadd -r sambashare
+
+chown root:sambashare /var/lib/samba/usershares
+
+chmod 1770 /var/lib/samba/usershares
+
+gpasswd sambashare -a samba_user
+
+
+sudo nano  /etc/samba/smb.conf
+
+[global]
+  usershare path = /var/lib/samba/usershares
+  usershare max shares = 100
+  usershare allow guests = yes
+  usershare owner only = yes
+
+
+
+
+sudo systemctl restart smb.service
+
+sudo systemctl restart wsdd.service
+
+
+testparm
