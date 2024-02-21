@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+for i in `blkid -o value -s UUID`; do
+if ! grep -q $i /etc/fstab ; then
+touch /usr/local/bin/storage_disks
+if ! grep -q $i /usr/local/bin/storage_disks; then
+echo $i >> /usr/local/bin/storage_disks
+fi
+fi
+done
+
+
+for i in `cat /usr/local/bin/storage_disks`; do
+touch /usr/local/bin/hdd-symlink.sh
+if ! grep -q $i /usr/local/bin/hdd-symlink.sh; then
+echo "cp -ans /media/$(logname)/$i/downloads/* $HOME/downloads" >> /usr/local/bin/hdd-symlink.sh
+fi
+done
