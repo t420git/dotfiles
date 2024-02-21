@@ -1,0 +1,17 @@
+#!/bin/bash
+
+while IFS= read -r line
+do
+
+let count=count+1
+
+echo $line
+        if [ $count -ge 10 ] ; then
+				sleep 10
+				count=0
+				continue
+        fi
+done < line
+
+
+grep -o "href=details.php?id=.*hit=1 " hdbits.html | sed 's/href=details.php?id=//g' | sed 's/&hit=1//g' > 3
