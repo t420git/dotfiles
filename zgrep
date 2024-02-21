@@ -1,0 +1,1 @@
+zgrep -i -H "pattern match" *.gz
