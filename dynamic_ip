@@ -1,0 +1,36 @@
+#!/bin/bash
+set -o nounset
+set -o errexit
+set -o pipefail
+
+
+dynamic_ip_script=/usr/local/sbin/dynamic
+
+
+cat <<-'EOF' | sed "s|^[[:blank:]]*||" | tee "$dynamic_ip_script"
+#!/bin/bash
+set -o nounset
+set -o errexit
+set -o pipefail
+
+
+dynamic_ip="$(/usr/bin/getent hosts gelcoatpistol.ddns.net | /usr/bin/awk '{print $1}')"
+
+ssh_https_ports=22,443
+
+rtorrent_ports=49152:60000
+
+
+if [[ -z "${dynamic_ip}" ]]; then
+exit 0
+fi
+
+
+if /sbin/iptables --list TCP --numeric | /usr/bin/grep --quiet "${dynamic_ip}"; then
+exit 0
+else
+/sbin/iptables --flush TCP
+/sbin/iptables --append TCP --in-interface eth0 --source "${dynamic_ip}" --protocol tcp --match multiport --dports "${ssh_https_ports}" --jump ACCEPT
+/sbin/iptables --append TCP --in-interface eth0 --protocol tcp --match multiport --dports "${rtorrent_ports}" --jump ACCEPT
+fi
+EOF
