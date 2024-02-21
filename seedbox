@@ -1,0 +1,45 @@
+#!/bin/bash
+set -o nounset
+set -o errexit
+set -o pipefail
+
+
+# ip6tables
+ip6tables --policy INPUT DROP
+ip6tables --policy FORWARD DROP
+ip6tables --policy OUTPUT DROP
+
+
+# iptables
+iptables --new-chain TCP
+iptables --new-chain UDP
+
+iptables --append INPUT --match conntrack --ctstate RELATED,ESTABLISHED --jump ACCEPT
+iptables --append INPUT --in-interface lo --jump ACCEPT
+iptables --append INPUT --match conntrack --ctstate INVALID --jump DROP
+iptables --append INPUT --protocol icmp --icmp-type 8 --match conntrack --ctstate NEW --jump ACCEPT
+
+iptables --append INPUT --protocol tcp --syn --match conntrack --ctstate NEW --jump TCP
+iptables --append INPUT --protocol udp --match conntrack --ctstate NEW --jump UDP
+
+iptables --append INPUT --protocol tcp --jump REJECT --reject-with tcp-reset
+iptables --append INPUT --protocol udp --jump REJECT --reject-with icmp-port-unreachable
+
+iptables --append INPUT --jump REJECT --reject-with icmp-proto-unreachable
+
+iptables --policy INPUT DROP
+iptables --policy FORWARD DROP
+
+
+# save/restore iptables rules
+iptables-save > /etc/iptables.rules
+echo 'pre-up iptables-restore < /etc/iptables.rules' >> /etc/network/interfaces
+
+
+# Note: the next function disables IPv6.
+# So restoring ip6tables rules, at startup, sends errors to logs:
+# grep -R ip6tables /var/log/*
+#
+# save/restore ip6tables rules
+ip6tables-save > /etc/ip6tables.rules
+echo 'pre-up ip6tables-restore < /etc/ip6tables.rules' >> /etc/network/interfaces
