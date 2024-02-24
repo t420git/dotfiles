@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+# cat links | xargs
+# tr ' ' '\n' < links
+# sort -u links > unique.txt
