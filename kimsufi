@@ -1,0 +1,3 @@
+# parallel-ssh --inline --hosts hosts.txt --askpass --par 4 wget http://freevps.us/downloads/bench.sh -O - -o /dev/null|bash
+
+# smartctl --all /dev/sda | grep Power_On_Hours
